@@ -1,27 +1,36 @@
-import { Controller, Get, Post, Put, Delete, Req, HttpException, HttpStatus, Param } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Put,
+  Delete,
+  Req,
+  HttpException,
+  HttpStatus,
+  Param,
+  Body
+} from '@nestjs/common';
 import { Request } from 'express';
 import { TaskService } from '../services/task.service';
+import { CreateTaskDto } from 'src/validators/create.task';
 
 @Controller('task')
 export class TaskController {
-  constructor(private readonly taskService: TaskService) {}
+  constructor(private readonly taskService: TaskService) { }
 
   @Get('/list')
-  getTasks(@Req() request:Request) {
+  getTasks(@Req() request: Request) {
     return this.taskService.list(request);
   }
 
+  @Get(':id')
+  getTask(@Param('id') id: number) {
+    return this.taskService.find(id);
+  }
+
   @Post()
-  saveTask(@Req() request) {
-    if (!request.body.title) {
-      throw new HttpException('The title field is required', HttpStatus.UNPROCESSABLE_ENTITY);
-    }
-
-    if (!request.body.endDate) {
-      throw new HttpException('The endDate field is required', HttpStatus.UNPROCESSABLE_ENTITY);
-    }
-
-    return this.taskService.create(request.body);
+  saveTask(@Body() createCatDto: CreateTaskDto) {
+    return this.taskService.create(createCatDto);
   }
 
   @Put(':id')

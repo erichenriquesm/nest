@@ -5,6 +5,7 @@ import { Repository } from 'typeorm';
 import { Request } from 'express';
 import { Pagination } from 'src/interfaces/pagination.interface';
 import { GenericResponse } from 'src/interfaces/generic.response.interface';
+import { CreateTaskDto } from 'src/validators/create.task';
 
 @Injectable()
 export class TaskService {
@@ -31,8 +32,20 @@ export class TaskService {
 
     return response;
   }
+
+  async find(id: number): Promise<Task> {
+    const task:Task = await this.task.findOne({
+      where: {id: id}
+    });
+
+    if(!task){
+      throw new HttpException('Task not found', HttpStatus.NOT_FOUND);
+    }
+
+    return task;
+  }
   
-  async create(data: Partial<Task>): Promise<GenericResponse> {
+  async create(data: CreateTaskDto): Promise<GenericResponse> {
     const has_task = await this.task.findOne({
       where: {title: data.title}
     });
@@ -40,12 +53,16 @@ export class TaskService {
     if(has_task){
       throw new HttpException('Already exists task with this title', HttpStatus.UNPROCESSABLE_ENTITY);
     }
+
+    if(!data.description){
+      data.description = "";
+    }
   
     try {
       const task = await this.task.save(data);
       return { message: 'task created', data: task };
     } catch (error) {
-      return {error: 'Error to create task.' };
+      return {error: `Error to create task: ${error}` };
     }
   }
 
