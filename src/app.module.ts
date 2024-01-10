@@ -1,18 +1,16 @@
 import { Module, MiddlewareConsumer } from '@nestjs/common';
-import { AppController } from './controllers/app.controller';
-import { TaskController } from './controllers/task.controller';
-import { AppService } from './services/app.service';
-import { TaskService } from './services/task.service';
-import { Task } from './entities/task.entity';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { DatabaseModule } from './database/database.module';
+import { AppController } from './app.controller';
+import { TaskController } from './task/task.controller';
+import { AppService } from './app.service';
+import { TaskService } from './task/task.service';
 import { TestMiddleware } from './middlewares/test.middleware';
+import { TaskModule } from './task/task.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Task]), DatabaseModule],
-  controllers: [AppController, TaskController],
-  providers: [AppService, TaskService],
-  exports: [TaskService]
+  imports: [TaskModule],
+  controllers: [AppController],
+  providers: [AppService],
+  exports: []
 })
 export class AppModule {
   configure(consumer: MiddlewareConsumer) {

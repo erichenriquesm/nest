@@ -11,8 +11,8 @@ import {
   Body
 } from '@nestjs/common';
 import { Request } from 'express';
-import { TaskService } from '../services/task.service';
-import { CreateTaskDto } from 'src/validators/create.task';
+import { TaskService } from './task.service';
+import { CreateTaskDto } from 'src/task/validators/create.task';
 
 @Controller('task')
 export class TaskController {

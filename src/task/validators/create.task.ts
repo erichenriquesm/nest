@@ -2,7 +2,7 @@ enum TaskStatus {
     PENDING = 'pending',
     COMPLETED = 'completed'
 }
-import { IsEmail, IsNotEmpty, IsDateString, IsEnum } from 'class-validator';
+import { IsNotEmpty, IsDateString, IsEnum } from 'class-validator';
 
 export class CreateTaskDto {
     @IsNotEmpty()

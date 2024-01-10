@@ -1,11 +1,11 @@
 import { Injectable, HttpStatus, HttpException } from '@nestjs/common';
-import { Task } from '../entities/task.entity';
+import { Task } from './entities/task.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Request } from 'express';
 import { Pagination } from 'src/interfaces/pagination.interface';
 import { GenericResponse } from 'src/interfaces/generic.response.interface';
-import { CreateTaskDto } from 'src/validators/create.task';
+import { CreateTaskDto } from 'src/task/validators/create.task';
 
 @Injectable()
 export class TaskService {
