@@ -1,13 +1,12 @@
 import { Module, MiddlewareConsumer } from '@nestjs/common';
 import { AppController } from './app.controller';
-import { TaskController } from './task/task.controller';
 import { AppService } from './app.service';
-import { TaskService } from './task/task.service';
 import { TestMiddleware } from './middlewares/test.middleware';
-import { TaskModule } from './task/task.module';
+import { TaskModule } from './tasks/task.module';
+import { SubTaskModule } from './sub_tasks/sub_task.module';
 
 @Module({
-  imports: [TaskModule],
+  imports: [TaskModule, SubTaskModule],
   controllers: [AppController],
   providers: [AppService],
   exports: []

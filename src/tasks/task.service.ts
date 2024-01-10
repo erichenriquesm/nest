@@ -1,17 +1,17 @@
 import { Injectable, HttpStatus, HttpException } from '@nestjs/common';
-import { Task } from './entities/task.entity';
+import { TaskEntity } from './entities/task.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Request } from 'express';
 import { Pagination } from 'src/interfaces/pagination.interface';
 import { GenericResponse } from 'src/interfaces/generic.response.interface';
-import { CreateTaskDto } from 'src/task/validators/create.task';
+import { CreateTaskDto } from 'src/tasks/validators/create.task';
 
 @Injectable()
 export class TaskService {
   constructor(
-    @InjectRepository(Task)
-    readonly task: Repository<Task>
+    @InjectRepository(TaskEntity)
+    readonly task: Repository<TaskEntity>
   ) { }
 
   async list(request: Request): Promise<Pagination> {
@@ -36,13 +36,13 @@ export class TaskService {
     return response;
   }
 
-  async find(id: number): Promise<Task> {
-    const task: Task = await this.task.findOne({
+  async find(id: number): Promise<TaskEntity> {
+    const task: TaskEntity = await this.task.findOne({
       where: { id: id }
     });
 
     if (!task) {
-      throw new HttpException('Task not found', HttpStatus.NOT_FOUND);
+      throw new HttpException('TaskEntity not found', HttpStatus.NOT_FOUND);
     }
 
     return task;
@@ -69,7 +69,7 @@ export class TaskService {
     }
   }
 
-  async update(id: number, data: Partial<Task>): Promise<GenericResponse> {
+  async update(id: number, data: Partial<TaskEntity>): Promise<GenericResponse> {
     const has_task = await this.task.findOne({
       where: { title: data.title }
     });
@@ -80,7 +80,7 @@ export class TaskService {
 
     try {
       this.task.update(id, data);
-      return { message: 'Task updated', data: await this.task.findOne({ where: { id: id } }) };
+      return { message: 'TaskEntity updated', data: await this.task.findOne({ where: { id: id } }) };
     } catch (error) {
       return { error: 'Error to update task.' };
     }
@@ -92,12 +92,12 @@ export class TaskService {
     });
 
     if (!task) {
-      throw new HttpException('Task not found', HttpStatus.NOT_FOUND);
+      throw new HttpException('TaskEntity not found', HttpStatus.NOT_FOUND);
     }
 
     try {
       this.task.remove(task);
-      return { message: 'Task deleted' };
+      return { message: 'TaskEntity deleted' };
     } catch (error) {
       return { error: 'Error to delete task.' };
     }

@@ -1,4 +1,5 @@
-import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn } from 'typeorm';
+import { SubTaskEntity } from 'src/sub_tasks/entities/sub_task.entity';
+import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, OneToMany } from 'typeorm';
 
 enum TaskStatus{
     PENDING = 'pending',
@@ -6,7 +7,7 @@ enum TaskStatus{
 }
 
 @Entity()
-export class Task {
+export class TaskEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -27,6 +28,9 @@ export class Task {
     type: 'timestamp'
   })
   endDate: Date;
+
+  @OneToMany(() => SubTaskEntity, subTask => subTask.task)
+  subTasks: SubTaskEntity[];
 
   @CreateDateColumn()
   createdAt: Date;
