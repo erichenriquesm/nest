@@ -5,7 +5,7 @@ import { Repository } from 'typeorm';
 import { Request } from 'express';
 import { Pagination } from 'src/interfaces/pagination.interface';
 import { GenericResponse } from 'src/interfaces/generic.response.interface';
-import { CreateTaskDto } from 'src/task/validators/create.task';
+import { CreateTaskDto } from 'src/task/validators/create-task';
 
 @Injectable()
 export class TaskService {
@@ -21,6 +21,7 @@ export class TaskService {
 
 
     const [data, total] = await this.task.findAndCount({
+      relations: {subTasks: true},
       take: limit,
       skip: skip,
       order: { "id": "DESC" },

@@ -29,12 +29,14 @@ export class Task {
   })
   endDate: Date;
 
-  @OneToMany(() => SubTask, subTask => subTask.task)
-  subTasks: SubTask[];
-
+  
   @CreateDateColumn()
   createdAt: Date;
-
+  
   @UpdateDateColumn()
   updatedAt: Date;
+
+  
+  @OneToMany(() => SubTask, subTask => subTask.task)
+  subTasks: SubTask[];
 }
