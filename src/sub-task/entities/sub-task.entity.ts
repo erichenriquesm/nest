@@ -1,10 +1,6 @@
+import { Status } from "src/enum/status.enum";
 import { Task } from "src/task/entities/task.entity";
 import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, JoinColumn, CreateDateColumn, UpdateDateColumn } from "typeorm";
-
-enum SubTaskStatus {
-  PENDING = 'pending',
-  COMPLETED = 'completed'
-}
 
 @Entity()
 export class SubTask {
@@ -19,15 +15,15 @@ export class SubTask {
 
   @Column({
     type: 'enum',
-    enum: SubTaskStatus,
-    default: SubTaskStatus.PENDING
+    enum: Status,
+    default: Status.PENDING
   })
-  status: SubTaskStatus;
+  status: Status;
 
   @Column()
   taskId: number;
 
-  @ManyToOne(() => Task, task => task.subTasks)
+  @ManyToOne(() => Task, task => task.subTasks, {onDelete: 'CASCADE'})
   @JoinColumn()
   task: Task;
 

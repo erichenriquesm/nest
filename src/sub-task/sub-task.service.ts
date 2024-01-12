@@ -1,6 +1,6 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { Not, Repository } from 'typeorm';
-import { SubTask } from './entities/sub_task.entity';
+import { SubTask } from './entities/sub-task.entity';
 import { Request } from 'express';
 import { CreateSubTaskDto } from './validators/create-sub-task';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -11,7 +11,7 @@ import { GenericResponse } from 'src/interfaces/generic.response.interface';
 @Injectable()
 export class SubTaskService {
     constructor(@InjectRepository(Task) private task:Repository<Task>,
-        @InjectRepository(SubTask) private sub_task:Repository<SubTask>
+        @InjectRepository(SubTask) private subTask:Repository<SubTask>
     ){}
 
     async create(data: CreateSubTaskDto): Promise<SubTask> {
@@ -23,63 +23,63 @@ export class SubTaskService {
             throw new HttpException("Task not found", HttpStatus.NOT_FOUND);
         }
 
-        const has_sub_task = !data.title ? null : await this.sub_task.findOne({
+        const hasSubTask = !data.title ? null : await this.subTask.findOne({
             where: {
                 title: data.title
             },
         });
 
-        if(has_sub_task){
+        if(hasSubTask){
             throw new HttpException('Already a exists sub task with this title', HttpStatus.NOT_FOUND);
         }
 
-        const sub_task = await this.sub_task.save({
+        const subTask = await this.subTask.save({
           ...data,
           task: task
         });
         
-        return sub_task;
+        return subTask;
     }
 
     async update(id: number, data: UpdateSubTaskDto) : Promise<SubTask> {
-        const sub_task = await this.sub_task.findOne({
+        const subTask = await this.subTask.findOne({
             where: {id: id}
         });
 
-        if(!sub_task){
+        if(!subTask){
             throw new HttpException("Task not found", HttpStatus.NOT_FOUND);
         }
 
-        const has_sub_task = !data.title ? null : await this.sub_task.findOne({
+        const hasSubTask = !data.title ? null : await this.subTask.findOne({
             where: {
                 title: data.title,
                 id: Not(id)
             },
         });
 
-        if(has_sub_task){
+        if(hasSubTask){
             throw new HttpException('Already a exists sub task with this title', HttpStatus.NOT_FOUND);
         }
         
-        await this.sub_task.update(id, data);
+        await this.subTask.update(id, data);
         
-        return await this.sub_task.findOne({
+        return await this.subTask.findOne({
             where: {id: id}
         });
     }
 
     async delete(id: number) : Promise<GenericResponse> {
-        const sub_task = await this.sub_task.findOne({
+        const subTask = await this.subTask.findOne({
             where: {
                id: id
             },
         });
 
-        if(!sub_task){
+        if(!subTask){
             throw new HttpException("Sub task not found", HttpStatus.NOT_FOUND);
         }
 
-        await this.sub_task.remove(sub_task);
+        await this.subTask.remove(subTask);
         
         return {
             message: "Sub task deleted"

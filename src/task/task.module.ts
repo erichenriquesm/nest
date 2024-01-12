@@ -1,12 +1,13 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import * as ormconfig from '../../ormconfig.js'; // Caminho para o seu arquivo de configuração TypeORM
-import { Task } from './entities/task.entity.js';
-import { TaskController } from './task.controller.js';
-import { TaskService } from './task.service.js';
+import * as ormconfig from '../../ormconfig'; // Caminho para o seu arquivo de configuração TypeORM
+import { Task } from './entities/task.entity';
+import { TaskController } from './task.controller';
+import { TaskService } from './task.service';
+import { SubTask } from 'src/sub-task/entities/sub-task.entity';
 
 @Module({
-    imports: [TypeOrmModule.forRoot(ormconfig), TypeOrmModule.forFeature([Task])],
+    imports: [TypeOrmModule.forRoot(ormconfig), TypeOrmModule.forFeature([Task, SubTask])],
     controllers: [TaskController],
     providers: [TaskService]
 })

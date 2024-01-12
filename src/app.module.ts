@@ -3,7 +3,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { TestMiddleware } from './middlewares/test.middleware';
 import { TaskModule } from './task/task.module';
-import { SubTaskModule } from './sub_task/sub_task.module';
+import { SubTaskModule } from './sub-task/sub-task.module';
 
 @Module({
   imports: [TaskModule, SubTaskModule],

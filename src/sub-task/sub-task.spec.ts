@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { SubTaskService } from './sub_task.service';
+import { SubTaskService } from './sub-task.service';
 
 describe('SubTasks', () => {
   let provider: SubTaskService;

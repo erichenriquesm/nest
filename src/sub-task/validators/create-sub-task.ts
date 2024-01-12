@@ -1,8 +1,5 @@
 import { IsNotEmpty, IsEnum, IsNumber } from 'class-validator';
-enum SubTaskStatus {
-    PENDING = 'pending',
-    COMPLETED = 'completed'
-}
+import { Status } from 'src/enum/status.enum';
 
 export class CreateSubTaskDto {
     @IsNotEmpty()
@@ -11,8 +8,8 @@ export class CreateSubTaskDto {
     @IsNotEmpty()
     description: string
 
-    @IsEnum(SubTaskStatus)
-    status: SubTaskStatus
+    @IsEnum(Status)
+    status: Status
 
     @IsNumber()
     taskId: number

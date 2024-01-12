@@ -1,9 +1,5 @@
 import { IsNotEmpty, IsDateString, IsEnum } from 'class-validator';
-enum TaskStatus {
-    PENDING = 'pending',
-    COMPLETED = 'completed'
-}
-
+import { Status } from 'src/enum/status.enum';
 export class CreateTaskDto {
     @IsNotEmpty()
     title: string;
@@ -11,8 +7,8 @@ export class CreateTaskDto {
     @IsDateString()
     endDate: string;
 
-    @IsEnum(TaskStatus)
-    status: TaskStatus
+    @IsEnum(Status)
+    status: Status
 
     description: string
 }

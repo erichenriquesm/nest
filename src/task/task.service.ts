@@ -1,37 +1,53 @@
 import { Injectable, HttpStatus, HttpException } from '@nestjs/common';
 import { Task } from './entities/task.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { LessThan, MoreThan, Repository } from 'typeorm';
 import { Request } from 'express';
 import { Pagination } from 'src/interfaces/pagination.interface';
 import { GenericResponse } from 'src/interfaces/generic.response.interface';
 import { CreateTaskDto } from 'src/task/validators/create-task';
+import { SubTask } from 'src/sub-task/entities/sub-task.entity';
+import { Status } from 'src/enum/status.enum';
 
 @Injectable()
 export class TaskService {
   constructor(
     @InjectRepository(Task)
-    readonly task: Repository<Task>
+    readonly task: Repository<Task>,
+    @InjectRepository(SubTask)
+    readonly subTask: Repository<SubTask>
   ) { }
 
   async list(request: Request): Promise<Pagination> {
-    const limit = request.query.per_page ? +request.query.per_page : 10;
+    const limit = request.query.perPage ? +request.query.perPage : 10;
     const page = request.query.page ? +request.query.page : 1;
     const skip = (page - 1) * limit;
 
+
+    
+    const currentDate = new Date();
+    
+    let conditions;
+
+    if(request.query.filterBy){
+      conditions = {
+          endDate: request.query.filterBy == 'expired' ? LessThan(currentDate) : MoreThan(currentDate)
+      };
+    }
 
     const [data, total] = await this.task.findAndCount({
       relations: {subTasks: true},
       take: limit,
       skip: skip,
       order: { "id": "DESC" },
+      where: request.query.filterBy ? conditions : {}
     });
 
     const response: Pagination = {
       data: data,
       total: total,
-      last_page: Math.ceil(total / limit),
-      current_page: page
+      lastPage: Math.ceil(total / limit),
+      currentPage: page
     };
 
     return response;
@@ -50,11 +66,11 @@ export class TaskService {
   }
 
   async create(data: CreateTaskDto): Promise<GenericResponse> {
-    const has_task = await this.task.findOne({
+    const hasTask = await this.task.findOne({
       where: { title: data.title }
     });
 
-    if (has_task) {
+    if (hasTask) {
       throw new HttpException('Already exists task with this title', HttpStatus.UNPROCESSABLE_ENTITY);
     }
 
@@ -71,16 +87,28 @@ export class TaskService {
   }
 
   async update(id: number, data: Partial<Task>): Promise<GenericResponse> {
-    const has_task = await this.task.findOne({
+    const hasTask = await this.task.findOne({
       where: { title: data.title }
     });
 
-    if (has_task && has_task.id != id) {
+    if (hasTask && hasTask.id != id) {
       throw new HttpException('Already exists task with this title', HttpStatus.UNPROCESSABLE_ENTITY);
     }
 
     try {
       this.task.update(id, data);
+      
+      if(data.status){
+        
+        const status:Status = data.status;
+        console.log(status);
+        await this.subTask.createQueryBuilder()
+        .update(SubTask)
+        .set({ status:  status})
+        .where('taskId = :taskId', { taskId: id })
+        .execute();
+      }
+
       return { message: 'Task updated', data: await this.task.findOne({ where: { id: id } }) };
     } catch (error) {
       return { error: 'Error to update task.' };

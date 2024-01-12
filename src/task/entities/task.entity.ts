@@ -1,10 +1,6 @@
-import { SubTask } from 'src/sub_task/entities/sub_task.entity';
+import { Status } from 'src/enum/status.enum';
+import { SubTask } from 'src/sub-task/entities/sub-task.entity';
 import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, OneToMany } from 'typeorm';
-
-enum TaskStatus{
-    PENDING = 'pending',
-    COMPLETED = 'completed'
-}
 
 @Entity()
 export class Task {
@@ -19,10 +15,10 @@ export class Task {
 
   @Column({
     type: 'enum',
-    enum: TaskStatus,
-    default: TaskStatus.PENDING
+    enum: Status,
+    default: Status.PENDING
   })
-  status: TaskStatus;
+  status: Status;
 
   @Column({
     type: 'timestamp'
