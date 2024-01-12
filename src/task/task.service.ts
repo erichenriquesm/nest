@@ -27,7 +27,7 @@ export class TaskService {
     
     const currentDate = new Date();
     
-    let conditions;
+    let conditions:object;
 
     if(request.query.filterBy){
       conditions = {
