@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus } from "@nestjs/common";
+import { HttpException, HttpStatus, Inject } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Request } from "express";
@@ -9,11 +9,13 @@ export class Auth {
     constructor(
         private readonly jwtService: JwtService,
         @InjectRepository(User)
-        readonly user: Repository<User>
+        readonly user: Repository<User>,
+        @Inject('REQUEST')
+        private readonly  req: Request
     ){}
 
-    async getUserLogged(req: Request): Promise<User>{
-        const decodedData = this.jwtService.decode(req.headers.authorization);
+    async getUserLogged(): Promise<User>{
+        const decodedData = this.jwtService.decode(this.req.headers.authorization);
         if (!decodedData || decodedData && !decodedData.email) {
             throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
         }

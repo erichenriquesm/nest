@@ -9,6 +9,7 @@ import { CreateTaskDto } from 'src/task/validators/create-task';
 import { SubTask } from 'src/sub-task/entities/sub-task.entity';
 import { Status } from 'src/enum/status.enum';
 import { Auth } from 'src/facades/auth';
+import { User } from 'src/user/entities/user.entity';
 
 @Injectable()
 export class TaskService {
@@ -19,14 +20,13 @@ export class TaskService {
     @InjectRepository(SubTask)
     readonly subTask: Repository<SubTask>
   ) { 
-    
   }
 
   async list(request: Request): Promise<Pagination> {
     const limit = request.query.perPage ? +request.query.perPage : 10;
     const page = request.query.page ? +request.query.page : 1;
     const skip = (page - 1) * limit;
-    const user = await this.authFacade.getUserLogged(request);
+    const user = await this.authFacade.getUserLogged();
 
     const currentDate = new Date();
     
@@ -56,8 +56,8 @@ export class TaskService {
     return response;
   }
 
-  async find(id: number, req: Request): Promise<Task> {
-    const user = await this.authFacade.getUserLogged(req);
+  async find(id: number): Promise<Task> {
+    const user = await this.authFacade.getUserLogged();
     const task: Task = await this.task.findOne({
       where: { 
         id: id,
@@ -72,7 +72,7 @@ export class TaskService {
     return task;
   }
 
-  async create(data: CreateTaskDto, req: Request): Promise<GenericResponse> {
+  async create(data: CreateTaskDto): Promise<GenericResponse> {
     const hasTask = await this.task.findOne({
       where: { title: data.title }
     });
@@ -88,7 +88,7 @@ export class TaskService {
     try {
       const task = await this.task.save({
         ...data,
-        user: await this.authFacade.getUserLogged(req)
+        user: await this.authFacade.getUserLogged()
       });
       return { message: 'task created', data: task };
     } catch (error) {
@@ -96,8 +96,8 @@ export class TaskService {
     }
   }
 
-  async update(id: number, data: Partial<Task>, req: Request): Promise<GenericResponse> {
-    const user = await this.authFacade.getUserLogged(req);
+  async update(id: number, data: Partial<Task>): Promise<GenericResponse> {
+    const user = await this.authFacade.getUserLogged();
     const task = await this.task.findOne({
       where: {
         id: id,
@@ -138,8 +138,8 @@ export class TaskService {
     }
   }
 
-  async delete(id: number, req: Request): Promise<GenericResponse> {
-    const user = await this.authFacade.getUserLogged(req);
+  async delete(id: number): Promise<GenericResponse> {
+    const user = await this.authFacade.getUserLogged();
     const task = await this.task.findOne({
       where: { 
         id: id,

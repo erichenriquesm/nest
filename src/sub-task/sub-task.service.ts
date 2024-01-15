@@ -17,8 +17,8 @@ export class SubTaskService {
         @InjectRepository(SubTask) private subTask: Repository<SubTask>
     ) { }
 
-    async create(data: CreateSubTaskDto, req: Request): Promise<SubTask> {
-        const user = await this.authFacade.getUserLogged(req);
+    async create(data: CreateSubTaskDto): Promise<SubTask> {
+        const user = await this.authFacade.getUserLogged();
         const task = await this.task.findOne({
             where: {
                 id: data.taskId,
@@ -48,8 +48,8 @@ export class SubTaskService {
         return subTask;
     }
 
-    async update(id: number, data: UpdateSubTaskDto, req: Request): Promise<SubTask> {
-        const user = await this.authFacade.getUserLogged(req);
+    async update(id: number, data: UpdateSubTaskDto): Promise<SubTask> {
+        const user = await this.authFacade.getUserLogged();
         const subTask = await this.subTask.findOne({
             where: { id: id }
         });
@@ -88,8 +88,8 @@ export class SubTaskService {
         });
     }
 
-    async delete(id: number, req: Request): Promise<GenericResponse> {
-        const user = await this.authFacade.getUserLogged(req);
+    async delete(id: number): Promise<GenericResponse> {
+        const user = await this.authFacade.getUserLogged();
         const subTask = await this.subTask.findOne({
             where: {
                 id: id

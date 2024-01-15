@@ -24,22 +24,22 @@ export class TaskController {
   }
 
   @Get(':id')
-  getTask(@Param('id') id: number, @Req() req) {
-    return this.taskService.find(id, req);
+  getTask(@Param('id') id: number) {
+    return this.taskService.find(id);
   }
 
   @Post()
-  saveTask(@Body() createCatDto: CreateTaskDto, @Req() req) {
-    return this.taskService.create(createCatDto, req);
+  saveTask(@Body() createCatDto: CreateTaskDto) {
+    return this.taskService.create(createCatDto);
   }
 
   @Put(':id')
-  updateTask(@Param('id') id: number, @Body() data, @Req() req) {
-    return this.taskService.update(id, data, req);
+  updateTask(@Param('id') id: number, @Body() data) {
+    return this.taskService.update(id, data);
   }
 
   @Delete(':id')
-  deleteTask(@Param('id') id: number, @Req() req) {
-    return this.taskService.delete(id, req);
+  deleteTask(@Param('id') id: number) {
+    return this.taskService.delete(id);
   }
 }

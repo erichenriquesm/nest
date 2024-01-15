@@ -64,8 +64,8 @@ export class UserService {
         return await this.generateToken(jwtData);
     }
 
-    async update(data: UpdateUserDto, req: Request) {
-        const userData = await this.authFacade.getUserLogged(req);
+    async update(data: UpdateUserDto) {
+        const userData = await this.authFacade.getUserLogged();
         if(data.email){
             delete data.email;
         }

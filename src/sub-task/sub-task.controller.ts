@@ -16,17 +16,17 @@ export class SubTaskController {
     constructor(private subTaskService: SubTaskService){}
     
     @Post()
-    createSubTask(@Body() data: CreateSubTaskDto, @Req() req) {
-        return this.subTaskService.create(data, req);
+    createSubTask(@Body() data: CreateSubTaskDto) {
+        return this.subTaskService.create(data);
     }
 
     @Put(':id')
-    updateSubTask(@Param('id') id: number, @Body() data: UpdateSubTaskDto, @Req() req) {
-        return this.subTaskService.update(id, data, req);
+    updateSubTask(@Param('id') id: number, @Body() data: UpdateSubTaskDto) {
+        return this.subTaskService.update(id, data);
     }
 
     @Delete(':id')
-    deleteSubTask(@Param('id') id: number, @Req() req) {
-        return this.subTaskService.delete(id, req);
+    deleteSubTask(@Param('id') id: number) {
+        return this.subTaskService.delete(id);
     }
 }

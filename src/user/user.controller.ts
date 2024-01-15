@@ -28,8 +28,8 @@ export class UserController {
     }
 
     @Put('')
-    updateUser(@Body() data: UpdateUserDto, @Req() req) {
-        return this.userService.update(data, req);
+    updateUser(@Body() data: UpdateUserDto) {
+        return this.userService.update(data);
     }
 
     @Post('login')
