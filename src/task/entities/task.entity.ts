@@ -1,6 +1,7 @@
 import { Status } from 'src/enum/status.enum';
 import { SubTask } from 'src/sub-task/entities/sub-task.entity';
-import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, OneToMany } from 'typeorm';
+import { User } from 'src/user/entities/user.entity';
+import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, OneToMany, ManyToOne, JoinColumn } from 'typeorm';
 
 @Entity()
 export class Task {
@@ -10,7 +11,10 @@ export class Task {
   @Column()
   title: string;
 
-  @Column('text')
+  @Column({
+    type: 'text',
+    nullable: true
+  })
   description: string;
 
   @Column({
@@ -25,6 +29,12 @@ export class Task {
   })
   endDate: Date;
 
+  @Column()
+  userId: number;
+
+  @ManyToOne(() => User, user => user.tasks, {onDelete: 'CASCADE'})
+  @JoinColumn()
+  user:User;
   
   @CreateDateColumn()
   createdAt: Date;

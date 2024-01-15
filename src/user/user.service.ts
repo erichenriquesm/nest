@@ -6,15 +6,18 @@ import { CreateUserDto } from './validators/create-user';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { IAuth } from 'src/interfaces/auth-interface';
-import * as dotenv from 'dotenv';
 import { LoginDto } from './validators/login';
 import { Request } from 'express';
+import { Auth } from 'src/facades/auth';
+import * as dotenv from 'dotenv';
+import { UpdateUserDto } from './validators/update-user';
 dotenv.config({ path: '../../.env' });
 
 @Injectable()
 export class UserService {
     constructor(
         private readonly jwtService: JwtService,
+        private readonly authFacade: Auth,
         @InjectRepository(User)
         readonly user: Repository<User>
     ) { }
@@ -26,7 +29,7 @@ export class UserService {
                 throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
             }
 
-            return await this.findUserByEmail(decodedData.email);
+            return await this.authFacade.findUserByEmail(decodedData.email);
 
         } catch (error) {
             throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
@@ -34,7 +37,7 @@ export class UserService {
     }
 
     async create(data: CreateUserDto) {
-        if(await this.findUserByEmail(data.email)){
+        if(await this.authFacade.findUserByEmail(data.email)){
             throw new HttpException('This email is already in use', HttpStatus.UNPROCESSABLE_ENTITY);
         }
 
@@ -44,7 +47,7 @@ export class UserService {
     }
 
     async login(data: LoginDto) {
-        const userData = await this.findUserByEmail(data.email);
+        const userData = await this.authFacade.findUserByEmail(data.email, true);
 
         if (!userData) {
             throw new HttpException('User not found', HttpStatus.NOT_FOUND);
@@ -61,39 +64,23 @@ export class UserService {
         return await this.generateToken(jwtData);
     }
 
-    async update(req: Request) {
-        const userData = await this.getUserLogged(req.headers.authorization);
-        if(req.body.email){
-            delete req.body.email;
+    async update(data: UpdateUserDto, req: Request) {
+        const userData = await this.authFacade.getUserLogged(req);
+        if(data.email){
+            delete data.email;
         }
 
-        if(req.body.password){
-            req.body.password = await bcrypt.hash(req.body.password, 10);
+        if(data.password){
+            data.password = await bcrypt.hash(data.password, 10);
         }
 
-        Object.assign(userData, req.body);
+        Object.assign(userData, data);
         delete userData.password;
         await this.user.save(userData)
         return userData;
     }
 
-    async getUserLogged(token: string): Promise<User>{
-        const decodedData = this.jwtService.decode(token);
-        if (!decodedData || decodedData && !decodedData.email) {
-            throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
-        }
 
-        return await this.findUserByEmail(decodedData.email);
-    }
-
-    async findUserByEmail(email: string) : Promise<User>{
-        return await this.user.findOne({
-            where: {
-                email: email
-            },
-            select: ['id', 'name', 'email', 'emailVerifiedAt']
-        });
-    }
 
     async generateToken(payload: any): Promise<IAuth> {
         return {

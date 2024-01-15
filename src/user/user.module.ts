@@ -5,6 +5,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import * as ormconfig from '../../ormconfig'; // Caminho para o seu arquivo de configuração TypeORM
 import { User } from './entities/user.entity';
 import { JwtModule } from '@nestjs/jwt';
+import { Auth } from 'src/facades/auth';
 
 @Module({
     imports: [
@@ -16,6 +17,6 @@ import { JwtModule } from '@nestjs/jwt';
         TypeOrmModule.forFeature([User])
     ],
     controllers: [UserController],
-    providers: [UserService]
+    providers: [UserService, Auth]
 })
 export class UserModule { }

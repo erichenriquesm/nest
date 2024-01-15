@@ -10,7 +10,10 @@ export class SubTask {
   @Column()
   title: string;
 
-  @Column('text')
+  @Column({
+    type: 'text',
+    nullable: true
+  })
   description: string;
 
   @Column({

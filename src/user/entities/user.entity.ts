@@ -1,5 +1,6 @@
 import { Exclude } from "class-transformer";
-import { Entity, PrimaryGeneratedColumn, Column,CreateDateColumn, UpdateDateColumn } from "typeorm"
+import { Task } from "src/task/entities/task.entity";
+import { Entity, PrimaryGeneratedColumn, Column,CreateDateColumn, UpdateDateColumn, OneToMany } from "typeorm"
 
 @Entity()
 export class User {
@@ -20,6 +21,9 @@ export class User {
         nullable: true
     })
     emailVerifiedAt: string;
+
+    @OneToMany(() => Task, Task => Task.userId)
+    tasks: Task[];
 
     @Column()
     @Exclude()

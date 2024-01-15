@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsDateString, IsEnum } from 'class-validator';
+import { IsNotEmpty, IsDateString, IsEnum, IsNumber } from 'class-validator';
 import { Status } from 'src/enum/status.enum';
 export class CreateTaskDto {
     @IsNotEmpty()

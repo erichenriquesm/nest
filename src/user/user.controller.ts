@@ -14,6 +14,7 @@ import {
 import { UserService } from './user.service';
 import { CreateUserDto } from './validators/create-user';
 import { LoginDto } from './validators/login';
+import { UpdateUserDto } from './validators/update-user';
 
 @Controller('user')
 export class UserController {
@@ -27,8 +28,8 @@ export class UserController {
     }
 
     @Put('')
-    updateUser(@Req() data) {
-        return this.userService.update(data);
+    updateUser(@Body() data: UpdateUserDto, @Req() req) {
+        return this.userService.update(data, req);
     }
 
     @Post('login')

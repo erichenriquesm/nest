@@ -5,10 +5,22 @@ import { Task } from './entities/task.entity';
 import { TaskController } from './task.controller';
 import { TaskService } from './task.service';
 import { SubTask } from 'src/sub-task/entities/sub-task.entity';
+import { JwtModule } from '@nestjs/jwt';
+import * as dotenv from 'dotenv';
+import { Auth } from 'src/facades/auth';
+import { User } from 'src/user/entities/user.entity';
+dotenv.config({ path: '../../.env' });
 
 @Module({
-    imports: [TypeOrmModule.forRoot(ormconfig), TypeOrmModule.forFeature([Task, SubTask])],
+    imports: [
+        JwtModule.register({
+            secret: process.env.SECRET,
+            signOptions: { expiresIn: process.env.EXPIRES || '1h' },
+        }),
+        TypeOrmModule.forRoot(ormconfig), 
+        TypeOrmModule.forFeature([Task, SubTask, User])
+    ],
     controllers: [TaskController],
-    providers: [TaskService]
+    providers: [TaskService, Auth]
 })
 export class TaskModule {}

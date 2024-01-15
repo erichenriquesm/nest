@@ -7,19 +7,26 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Task } from 'src/task/entities/task.entity';
 import { UpdateSubTaskDto } from './validators/update-sub-tasks.dto';
 import { GenericResponse } from 'src/interfaces/generic-response-interface';
+import { Auth } from 'src/facades/auth';
 
 @Injectable()
 export class SubTaskService {
-    constructor(@InjectRepository(Task) private task:Repository<Task>,
-        @InjectRepository(SubTask) private subTask:Repository<SubTask>
-    ){}
+    constructor(
+        private readonly authFacade: Auth,
+        @InjectRepository(Task) private task: Repository<Task>,
+        @InjectRepository(SubTask) private subTask: Repository<SubTask>
+    ) { }
 
-    async create(data: CreateSubTaskDto): Promise<SubTask> {
+    async create(data: CreateSubTaskDto, req: Request): Promise<SubTask> {
+        const user = await this.authFacade.getUserLogged(req);
         const task = await this.task.findOne({
-            where: {id: data.taskId}
+            where: {
+                id: data.taskId,
+                userId: user.id
+            }
         });
 
-        if(!task){
+        if (!task) {
             throw new HttpException("Task not found", HttpStatus.NOT_FOUND);
         }
 
@@ -29,26 +36,37 @@ export class SubTaskService {
             },
         });
 
-        if(hasSubTask){
+        if (hasSubTask) {
             throw new HttpException('Already a exists sub task with this title', HttpStatus.NOT_FOUND);
         }
 
         const subTask = await this.subTask.save({
-          ...data,
-          task: task
+            ...data,
+            task: task
         });
-        
+
         return subTask;
     }
 
-    async update(id: number, data: UpdateSubTaskDto) : Promise<SubTask> {
+    async update(id: number, data: UpdateSubTaskDto, req: Request): Promise<SubTask> {
+        const user = await this.authFacade.getUserLogged(req);
         const subTask = await this.subTask.findOne({
-            where: {id: id}
+            where: { id: id }
         });
 
-        if(!subTask){
+        if (!subTask) {
             throw new HttpException("Task not found", HttpStatus.NOT_FOUND);
         }
+
+        if (!await this.task.findOne({
+            where: {
+                id: subTask.taskId,
+                userId: user.id
+            }
+        })) {
+            throw new HttpException("Unauthorized", HttpStatus.UNAUTHORIZED);
+        }
+
 
         const hasSubTask = !data.title ? null : await this.subTask.findOne({
             where: {
@@ -57,30 +75,43 @@ export class SubTaskService {
             },
         });
 
-        if(hasSubTask){
+        if (hasSubTask) {
             throw new HttpException('Already a exists sub task with this title', HttpStatus.NOT_FOUND);
         }
-        
+
+        delete data.taskId;
+
         await this.subTask.update(id, data);
-        
+
         return await this.subTask.findOne({
-            where: {id: id}
+            where: { id: id }
         });
     }
 
-    async delete(id: number) : Promise<GenericResponse> {
+    async delete(id: number, req: Request): Promise<GenericResponse> {
+        const user = await this.authFacade.getUserLogged(req);
         const subTask = await this.subTask.findOne({
             where: {
-               id: id
+                id: id
             },
         });
 
-        if(!subTask){
+        if (!subTask) {
             throw new HttpException("Sub task not found", HttpStatus.NOT_FOUND);
         }
 
+        if (!await this.task.findOne({
+            where: {
+                id: subTask.taskId,
+                userId: user.id
+            }
+        })) {
+            throw new HttpException("Unauthorized", HttpStatus.UNAUTHORIZED);
+        }
+
+
         await this.subTask.remove(subTask);
-        
+
         return {
             message: "Sub task deleted"
         }

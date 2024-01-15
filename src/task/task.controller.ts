@@ -9,7 +9,7 @@ import {
   HttpStatus,
   Param,
   Body
-} from '@nestjs/common';
+} from '@nestjs/common'; 
 import { Request } from 'express';
 import { TaskService } from './task.service';
 import { CreateTaskDto } from 'src/task/validators/create-task';
@@ -24,22 +24,22 @@ export class TaskController {
   }
 
   @Get(':id')
-  getTask(@Param('id') id: number) {
-    return this.taskService.find(id);
+  getTask(@Param('id') id: number, @Req() req) {
+    return this.taskService.find(id, req);
   }
 
   @Post()
-  saveTask(@Body() createCatDto: CreateTaskDto) {
-    return this.taskService.create(createCatDto);
+  saveTask(@Body() createCatDto: CreateTaskDto, @Req() req) {
+    return this.taskService.create(createCatDto, req);
   }
 
   @Put(':id')
-  updateTask(@Param('id') id: number, @Body() data) {
-    return this.taskService.update(id, data);
+  updateTask(@Param('id') id: number, @Body() data, @Req() req) {
+    return this.taskService.update(id, data, req);
   }
 
   @Delete(':id')
   deleteTask(@Param('id') id: number, @Req() req) {
-    return this.taskService.delete(id);
+    return this.taskService.delete(id, req);
   }
 }

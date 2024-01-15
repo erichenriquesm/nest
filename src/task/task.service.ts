@@ -8,29 +8,34 @@ import { GenericResponse } from 'src/interfaces/generic-response-interface';
 import { CreateTaskDto } from 'src/task/validators/create-task';
 import { SubTask } from 'src/sub-task/entities/sub-task.entity';
 import { Status } from 'src/enum/status.enum';
+import { Auth } from 'src/facades/auth';
 
 @Injectable()
 export class TaskService {
   constructor(
+    private readonly authFacade: Auth,
     @InjectRepository(Task)
     readonly task: Repository<Task>,
     @InjectRepository(SubTask)
     readonly subTask: Repository<SubTask>
-  ) { }
+  ) { 
+    
+  }
 
   async list(request: Request): Promise<Pagination> {
     const limit = request.query.perPage ? +request.query.perPage : 10;
     const page = request.query.page ? +request.query.page : 1;
     const skip = (page - 1) * limit;
+    const user = await this.authFacade.getUserLogged(request);
 
     const currentDate = new Date();
     
-    let conditions:object;
+    let conditions:{userId: number, endDate?:any} = {
+      userId: user.id
+    };
 
     if(request.query.filterBy){
-      conditions = {
-          endDate: request.query.filterBy == 'expired' ? LessThan(currentDate) : MoreThan(currentDate)
-      };
+      conditions.endDate = request.query.filterBy == 'expired' ? LessThan(currentDate) : MoreThan(currentDate);
     }
 
     const [data, total] = await this.task.findAndCount({
@@ -38,7 +43,7 @@ export class TaskService {
       take: limit,
       skip: skip,
       order: { "id": "DESC" },
-      where: request.query.filterBy ? conditions : {}
+      where: conditions
     });
 
     const response: Pagination = {
@@ -51,9 +56,13 @@ export class TaskService {
     return response;
   }
 
-  async find(id: number): Promise<Task> {
+  async find(id: number, req: Request): Promise<Task> {
+    const user = await this.authFacade.getUserLogged(req);
     const task: Task = await this.task.findOne({
-      where: { id: id }
+      where: { 
+        id: id,
+        userId: user.id
+      }
     });
 
     if (!task) {
@@ -63,7 +72,7 @@ export class TaskService {
     return task;
   }
 
-  async create(data: CreateTaskDto): Promise<GenericResponse> {
+  async create(data: CreateTaskDto, req: Request): Promise<GenericResponse> {
     const hasTask = await this.task.findOne({
       where: { title: data.title }
     });
@@ -77,19 +86,35 @@ export class TaskService {
     }
 
     try {
-      const task = await this.task.save(data);
+      const task = await this.task.save({
+        ...data,
+        user: await this.authFacade.getUserLogged(req)
+      });
       return { message: 'task created', data: task };
     } catch (error) {
       return { error: `Error to create task: ${error}` };
     }
   }
 
-  async update(id: number, data: Partial<Task>): Promise<GenericResponse> {
-    const hasTask = await this.task.findOne({
-      where: { title: data.title }
+  async update(id: number, data: Partial<Task>, req: Request): Promise<GenericResponse> {
+    const user = await this.authFacade.getUserLogged(req);
+    const task = await this.task.findOne({
+      where: {
+        id: id,
+        userId: user.id
+      }
     });
 
-    if (hasTask && hasTask.id != id) {
+    if (!task) {
+      throw new HttpException('Task not found', HttpStatus.NOT_FOUND);
+    }
+    
+    const hasTask = await this.task.findOne({
+      where: { title: data.title, userId: user.id }
+    });
+
+
+    if (hasTask && hasTask.id != task.id) {
       throw new HttpException('Already exists task with this title', HttpStatus.UNPROCESSABLE_ENTITY);
     }
 
@@ -113,9 +138,13 @@ export class TaskService {
     }
   }
 
-  async delete(id: number): Promise<GenericResponse> {
+  async delete(id: number, req: Request): Promise<GenericResponse> {
+    const user = await this.authFacade.getUserLogged(req);
     const task = await this.task.findOne({
-      where: { id: id }
+      where: { 
+        id: id,
+        userId: user.id
+      }
     });
 
     if (!task) {
