@@ -3,8 +3,8 @@ import { Task } from './entities/task.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { LessThan, MoreThan, Repository } from 'typeorm';
 import { Request } from 'express';
-import { Pagination } from 'src/interfaces/pagination.interface';
-import { GenericResponse } from 'src/interfaces/generic.response.interface';
+import { Pagination } from 'src/interfaces/pagination-interface';
+import { GenericResponse } from 'src/interfaces/generic-response-interface';
 import { CreateTaskDto } from 'src/task/validators/create-task';
 import { SubTask } from 'src/sub-task/entities/sub-task.entity';
 import { Status } from 'src/enum/status.enum';
@@ -23,8 +23,6 @@ export class TaskService {
     const page = request.query.page ? +request.query.page : 1;
     const skip = (page - 1) * limit;
 
-
-    
     const currentDate = new Date();
     
     let conditions:object;

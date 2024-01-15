@@ -6,7 +6,7 @@ import { CreateSubTaskDto } from './validators/create-sub-task';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Task } from 'src/task/entities/task.entity';
 import { UpdateSubTaskDto } from './validators/update-sub-tasks.dto';
-import { GenericResponse } from 'src/interfaces/generic.response.interface';
+import { GenericResponse } from 'src/interfaces/generic-response-interface';
 
 @Injectable()
 export class SubTaskService {
