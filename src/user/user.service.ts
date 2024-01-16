@@ -2,15 +2,15 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { CreateUserDto } from './validators/create-user';
+import { CreateUserDto } from './dto/create-user.dto';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { IAuth } from 'src/interfaces/auth-interface';
-import { LoginDto } from './validators/login';
+import { LoginDto } from './dto/login.dto';
 import { Request } from 'express';
 import { Auth } from 'src/facades/auth';
 import * as dotenv from 'dotenv';
-import { UpdateUserDto } from './validators/update-user';
+import { UpdateUserDto } from './dto/update-user.dto';
 dotenv.config({ path: '../../.env' });
 
 @Injectable()

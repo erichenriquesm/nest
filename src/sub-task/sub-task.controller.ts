@@ -8,8 +8,8 @@ import{
     Delete
 } from '@nestjs/common';
 import { SubTaskService } from './sub-task.service';
-import { CreateSubTaskDto } from './validators/create-sub-task';
-import { UpdateSubTaskDto } from './validators/update-sub-tasks.dto';
+import { CreateSubTaskDto } from './dto/create-sub-task.dto';
+import { UpdateSubTaskDto } from './dto/update-sub-tasks.dto';
 
 @Controller('sub-task')
 export class SubTaskController {

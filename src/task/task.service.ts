@@ -5,7 +5,7 @@ import { LessThan, MoreThan, Repository } from 'typeorm';
 import { Request } from 'express';
 import { Pagination } from 'src/interfaces/pagination-interface';
 import { GenericResponse } from 'src/interfaces/generic-response-interface';
-import { CreateTaskDto } from 'src/task/validators/create-task';
+import { CreateTaskDto } from 'src/task/dto/create-task.dto';
 import { SubTask } from 'src/sub-task/entities/sub-task.entity';
 import { Status } from 'src/enum/status.enum';
 import { Auth } from 'src/facades/auth';

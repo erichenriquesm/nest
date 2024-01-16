@@ -12,9 +12,9 @@ import {
     Headers
 } from '@nestjs/common';
 import { UserService } from './user.service';
-import { CreateUserDto } from './validators/create-user';
-import { LoginDto } from './validators/login';
-import { UpdateUserDto } from './validators/update-user';
+import { CreateUserDto } from './dto/create-user.dto';
+import { LoginDto } from './dto/login.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
 
 @Controller('user')
 export class UserController {

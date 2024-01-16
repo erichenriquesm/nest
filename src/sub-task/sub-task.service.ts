@@ -2,10 +2,10 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { Not, Repository } from 'typeorm';
 import { SubTask } from './entities/sub-task.entity';
 import { Request } from 'express';
-import { CreateSubTaskDto } from './validators/create-sub-task';
+import { CreateSubTaskDto } from './dto/create-sub-task.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Task } from 'src/task/entities/task.entity';
-import { UpdateSubTaskDto } from './validators/update-sub-tasks.dto';
+import { UpdateSubTaskDto } from './dto/update-sub-tasks.dto';
 import { GenericResponse } from 'src/interfaces/generic-response-interface';
 import { Auth } from 'src/facades/auth';
 

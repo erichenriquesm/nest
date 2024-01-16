@@ -12,7 +12,7 @@ import {
 } from '@nestjs/common'; 
 import { Request } from 'express';
 import { TaskService } from './task.service';
-import { CreateTaskDto } from 'src/task/validators/create-task';
+import { CreateTaskDto } from 'src/task/dto/create-task.dto';
 
 @Controller('task')
 export class TaskController {
